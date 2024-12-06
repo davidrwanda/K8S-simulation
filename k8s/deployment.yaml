@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: microservice
+  namespace: ${ENVIRONMENT}
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: microservice
+  template:
+    metadata:
+      labels:
+        app: microservice
+      annotations:
+        vault.hashicorp.com/agent-inject: 'true'
+        vault.hashicorp.com/role: 'microservice'
+        vault.hashicorp.com/agent-inject-secret-config: 'secret/data/microservice/config'
+    spec:
+      containers:
+      - name: microservice
+        image: ${REGISTRY}/${IMAGE_NAME}:${TAG}
+        ports:
+        - containerPort: 5000
+      serviceAccountName: microservice-sa
